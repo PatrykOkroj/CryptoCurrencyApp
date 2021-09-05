@@ -21,21 +21,15 @@ public class CryptoServiceImpl implements CryptoService {
 
     @Override
     public String getCurrentPrice(String from, List<String> to, Double amount) {
-        // pobranie nazwy kryptowaluty, która będzie wymieniana
         Crypto sourceCurrencyInfo = getCryptoInfo(from);
-        // pobranie danych o wymienianej kryptowalucie
         Currency sourceCurrency = new Currency(sourceCurrencyInfo.getRates().getDetails().get(from), amount);
-        // utworzenie listy kryptowalut
         List<Currency> currencies = new ArrayList<>();
         for (String value : to) {
             Crypto currencyToInfo = getCryptoInfo(value);
-            // utworzenie obiektu z informacjami o kryptowalucie docelowej przy wymianie
             Currency currencyTo = new Currency(currencyToInfo.getRates().getDetails().get(value), amount);
-            // wyliczenie ilości nowo pozyskanej kryptowaluty
+
             currencyTo.setAmount(((sourceCurrency.getRate() * amount) / currencyToInfo.getRates().getDetails().get(value)));
-            // wyliczenie 1% podatku z kryptowaluty która zostaje wymieniana
             currencyTo.setFee(sourceCurrency.getRate() * 0.01);
-            // wartość nowo posiadanej kryptowaluty w USD - 1% podatku
             currencyTo.setResult((currencyToInfo.getRates().getDetails().get(value) * currencyTo.getAmount()) - currencyTo.getFee());
 
             currencies.add(currencyTo);
